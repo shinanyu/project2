@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MyPage</title>
+<link rel="stylesheet" href="../css/header.css">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+function check(){
+	var pattern = new RegExp(/^[a-z0-9_]+$/);
+	
+	if($.trim($("#memPw").val())==""){
+		alert("현재 비밀번호를 입력하세요!");
+		$("#memPw").val("").focus();
+		return false;
+	}
+	if($.trim($("#memChangePw").val())==""){
+		alert("변경할 비밀번호를 입력하세요!");
+		$("#memChangePw").val("").focus();
+		return false;
+	}
+	if($.trim($("#memChangePw2").val())==""){
+		alert("변경할 비밀번호확인을 입력하세요!");
+		$("#memChangePw2").val("").focus();
+		return false;
+	}
+	if($.trim($("#memChangePw").val()) != $.trim($("#memChangePw2").val())){
+		alert("비번이 다릅니다!");
+		$("#memPw").val("");
+		$("#memChangePw").val("");
+		$("#memChangePw2").val("");
+		$("#memPw").focus();
+		return false;
+	}
+	else if(!pattern.test($("#memChangePw").val())){
+		alert("비밀번호는 영문소문자, 숫자, 언더바(_)만 사용할 수 있습니다.");
+		return false;
+	}
+}
+ </script>
+</head>
+<body>
+<div class="wrapper">
+	<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<div align="center" style="margin-top: 5px;">
+		<a th:href="@{/mypageL}"><input type="button" value="내정보"></a>
+		<a th:href="@{/classListP}"><input type="button" value="수강목록"></a>
+		<a th:href="@{/wishListP}"><input type="button" value="관심목록"></a>
+		<a th:href="@{/writeListP}"><input type="button" value="내가쓴글"></a>
+		<a sec:authorize="hasRole('ROLE_BUSINESS')" th:href="@{/myClassP}">
+		<input type="button" value="강의목록"></a>
+	</div>
+	<hr>
+	<div align="center">
+	<h2>비밀번호 변경</h2>
+	<form method='post' action="/changePw.do" onSubmit="return check()">
+		<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+		<input type="hidden" name="memId" th:value="${memId}">
+		<table>
+			<tr>
+				<td width=150>현재 비밀번호</td>
+				<td><input type="password" id="memPw" name="memPw" style="width: 400px; height: 25px;"></td>
+			</tr>
+			<tr>
+				<td>변경할 비밀번호</td>
+				<td><input type="password" id="memChangePw" name="memChangePw" style="width: 400px; height: 25px;"></td>
+			</tr>
+			<tr>
+				<td>비밀번호 확인</td>
+				<td><input type="password" id="memChangePw2" name="memChangePw2" style="width: 400px; height: 25px;"></td>
+			</tr>
+			<tr>
+				<td colspan='2' style="text-align: center;"><input type="submit" value="변경"></td>
+			</tr>
+		</table>
+	</form>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

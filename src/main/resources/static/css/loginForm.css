@@ -1,0 +1,108 @@
+@charset "UTF-8";
+
+@red: #EF6161;
+@green: #7ac142;
+
+.parent-div {
+	position: relative;
+}
+
+.login-page {
+  position: absolute;
+  width: 95%;
+  min-height: 85%;
+  background: #fff;
+  margin: 8px;
+
+
+  .login-content {
+    width: 420px;
+    padding: 40px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    position: absolute;
+    background: #FFF;
+    box-shadow: 0 0px 70px rgba(0, 0, 0, 0.1);
+    border-top: 5px solid #7ac142;
+    float: left;
+    transition: all 0.2s ease-out;
+    transition-delay: 0.2s;
+
+    }
+
+    h2 {
+      text-align: left;
+      color: #7ac142;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    form.wrapper-box {
+      margin-top: 40px;
+      input{
+        margin-top: 20px;
+        border: none;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        border-radius: 0;
+        padding-left: 0;
+        box-shadow: none;
+        transition: all 0.1s ease-out;
+        &:valid { border-bottom: 1px solid #7ac142; }
+        &:focus:invalid { border-bottom: 1px solid #EF6161; }
+      }
+
+      ::-webkit-input-placeholder { color: rgba(0,0,0,0.5); }
+      :-moz-placeholder { color: rgba(0,0,0,0.5); }
+      ::-moz-placeholder { color: rgba(0,0,0,0.5); }
+      :-ms-input-placeholder { color: rgba(0,0,0,0.5); }
+
+      button {
+        display: inline-block;
+        margin-top: 50px;
+        border: 2px solid #7ac142;
+        background: #7ac142;
+        border-radius: 25px;
+        padding: 3px 12px 5px 12px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: bold;
+        letter-spacing: 0px;
+        transition: all 0.1s ease-out;
+        &:hover {
+          color: #7ac142;
+          background: #fff;
+          border: 2px solid #7ac142;
+        }
+        &:active {
+          box-shadow: none;
+        }
+      }
+    }
+
+    .outer-link{
+      display: inline-block;
+      /* margin-top: 50px; */
+      padding: 5px 0;
+      display: block;
+      color: rgba(0, 0, 0, 0.4);
+      transition: all 0.1s ease-out;
+      &:hover {
+        transition: all 0s ease-out;
+        color: rgba(0,0,0,0.8);
+        text-decoration: none;
+      }
+
+    }
+
+    &.login-content-signin > div{
+      top: 50%;
+      position: relative;
+      transform: translateY(-50%);
+    }
+
+}

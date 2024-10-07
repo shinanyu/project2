@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+		xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<link rel="stylesheet" href="/css/header.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script>
+function back(){
+     history.back();
+}
+</script>
+</head>
+<body>
+<div class="wrapper">
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<div class="container" align="center">
+		<h2 class="text-primary">강의 수정</h2>
+		<form th:action="@{/healthclass/update/{cl_no}(cl_no=${healthclass.clNo})}" method="post" name="frm"
+			onsubmit="return chk()" enctype="multipart/form-data">
+			<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+			<table class="table table-striped">			
+				<tr>
+					<td>강의타입</td>
+					<td>
+					<select class="box" name="clType">
+  						<option value="헬스"  th:selected="${healthclass.clType} == '헬스'">헬스</option>
+  						<option value="재활" th:selected="${healthclass.clType} == '재활'">재활</option>
+  						<option value="필라테스" th:selected="${healthclass.clType} == '필라테스'">필라테스</option>
+  						<option value="요가"  th:selected="${healthclass.clType} == '요가'">요가</option>	
+  						<option value="시니어" th:selected="${healthclass.clType} == '시니어'">시니어</option>
+					</select>
+					</td>
+				</tr>
+				<tr>
+					<td>강의명</td>
+					<td>
+					<input type="text" name="clName" required="required" style="width: 900px; height: 25px;"
+						th:value="${healthclass.clName}">
+					</td>
+				</tr>
+				<tr>
+					<td>소개</td>
+					<td>
+						<textarea name="clIntro" required="required" style="width: 900px; height: 450px;"
+						th:text="${healthclass.clIntro}" />
+						</td>
+				</tr>
+				<tr>
+					<td>강의일</td>
+					<td>
+					<select class="box" name="clDay">
+  						<option value="Monday"  th:selected="${healthclass.clDay} == 'Monday'">Monday</option>
+  						<option value="Tuesday" th:selected="${healthclass.clDay} == 'Tuesday'">Tuesday</option>
+  						<option value="Wednsday" th:selected="${healthclass.clDay} == 'Wednsday'">Wednsday</option>
+  						<option value="Thursday"  th:selected="${healthclass.clDay} == 'Thursday'">Thursday</option>	
+  						<option value="Friday" th:selected="${healthclass.clDay} == 'Friday'">Friday</option>
+  						<option value="Saturday" th:selected="${healthclass.clDay} == 'Saturday'">Saturday</option>
+  						<option value="Sunday" th:selected="${healthclass.clDay} == 'Sunday'">Sunday</option>
+					</select>
+					</td>
+				</tr>
+				<tr>
+					<td>시작시간</td>	
+					<td>
+					<input type="number" max='23' min='0' name="cl_start1" required="required" style="width: 30px; height: 25px;"
+						th:value="${cl_start1}">
+						:
+					<input type="number" max= '59' min='0' name="cl_start2" required="required" style="width: 30px; height: 25px;"
+						th:value="${cl_start2}">
+					</td>
+				</tr>
+				<tr>
+					<td>소요시간(분)</td>
+					<td>
+						<input type="text" name="clTime" required="required" style="width: 70px; height: 25px;"
+						th:value="${healthclass.clTime}" />
+					</td>
+				</tr>
+				<!-- 프로필 사진 -->
+				<tr>
+					<td>강사사진</td>
+					<td>
+					<input type="file" name="profile" id="profile"/>
+					<ul class="image-profile" id="image-profile"></ul>
+					</td>
+				</tr>
+				<tr>	
+					<td>강의 썸네일</td>
+					<td>
+					<input type="file" name="thumbnail" id="thumbnail"/>
+					<ul class="image-thumbnail" id="image-thumbnail"></ul>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+					<input type="submit" value="수정">
+					<input type="button" value="취소" onclick="back()">
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+<script th:inline="javascript">
+function goBack() {
+	window.history.back();
+}
+window.onload = function() {
+	document.getElementById("profile").addEventListener('change', getImageFilesProfile);
+	document.getElementById("thumbnail").addEventListener('change', getImageFilesThumbnail);
+	const cl_no = /*[[${healthclass.clNo}]]*/'기본값'
+	const profileFileName = /*[[${healthclass.clProfile}]]*/'기본값';
+	const thumbnailFileName = /*[[${healthclass.clThumbnail}]]*/'기본값';
+	if ( profileFileName == null) {
+		document.getElementById("image-profile").innerHTML = "<a>저장된 프로필 사진 없음</a>";
+	}
+	else {
+		const preview = createElement2("profile", cl_no, profileFileName);
+		document.getElementById("image-profile").appendChild(preview);
+	}
+	if (thumbnailFileName == null ) {
+		document.getElementById("image-thumbnail").innerHTML = "<a>저장된 썸네일 사진 없음</a>";
+	}
+	else {
+		const preview = createElement2("thumbnail", cl_no, thumbnailFileName);
+		document.getElementById("image-thumbnail").appendChild(preview);
+	}
+}
+function getImageFilesProfile(e) {
+    const files = e.currentTarget.files;
+    const imagePreview = document.querySelector('.image-profile');
+	document.getElementById("image-profile").replaceChildren();
+    // 파일 타입 검사
+    [...files].forEach(file => {
+      if (!file.type.match("image/.*")) {
+        alert('이미지 파일만 업로드가 가능합니다.');
+        return;
+      } // if
+    
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const preview = createElement(e, file);
+          imagePreview.appendChild(preview);
+        }; //onload
+        reader.readAsDataURL(file);
+    }); // forEach
+  } //getImageFilesProfile
+  function getImageFilesThumbnail(e) {
+	    const files = e.currentTarget.files;
+	    const imagePreview = document.querySelector('.image-thumbnail');
+		document.getElementById("image-thumbnail").replaceChildren();
+	    // 파일 타입 검사
+	    [...files].forEach(file => {
+	      if (!file.type.match("image/.*")) {
+	        alert('이미지 파일만 업로드가 가능합니다.');
+	        return;
+	      } // if
+	    
+	        const reader = new FileReader();
+	        reader.onload = (e) => {
+	          const preview = createElement(e, file);
+	          imagePreview.appendChild(preview);
+	        }; //onload
+	        reader.readAsDataURL(file);
+	    }); // forEach
+	  } //getImageFilesThumbnail
+	  
+ function createElement(e, file) {
+    const li = document.createElement('li');
+    const img = document.createElement('img');
+    img.setAttribute('src', e.target.result);
+    img.setAttribute('data-file', file.name);
+    img.setAttribute('width', 150);
+    img.setAttribute('height', 150);
+    li.appendChild(img);
+
+    return li;
+  }
+function createElement2(type,cl_no, FileName) {
+	const li = document.createElement('li');
+    const img = document.createElement('img');
+    //img.setAttribute('src', filename);
+    img.setAttribute('src', "/upload/image/"+type+"/"+cl_no + "_" + FileName);
+    //img.setAttribute('src', "upload/"+cl_no + "_"+ FileName);
+    img.setAttribute('width', 150);
+    img.setAttribute('height', 150);
+    li.appendChild(img);
+    return li;
+}
+</script>
+</html>

@@ -1,0 +1,64 @@
+@charset "UTF-8";
+.a{
+	color: inherit;
+	text-decoration-line: none;
+}
+.title-row {
+	padding: .5rem .75rem;
+	margin-top: 40px;
+    font-size: 1.1rem;
+    border-top: 1px solid;
+    border-bottom: 1px solid;
+    border-color: var(--color-bd-outer);
+    background-color: var(--color-bg-focus);
+    border-color: #bbb;
+    background-color: #eee;
+}
+.title-row .title{
+    display: inline-block;
+}
+.date {
+	border-bottom: 1px solid;
+    text-align: right;
+}
+.healthclass{
+	margin-top: 10px;
+	text-align: right;
+}
+.top{
+	min-height : 300px;
+	border-bottom: 1px solid;
+	border-color: var(--color-bd-outer);
+	
+}
+.image{
+	float: left;
+	width : 50%;
+	text-align: center;
+}
+.trainer{
+	float: left;
+	width : 50%;
+	text-align: center;
+	
+}
+.contain {
+	border-bottom: 1px solid;
+    border-color: var(--color-bd-outer);
+    padding: .8rem;
+}
+.Notice-table{
+	text-align: center;
+	width : 100%;
+}
+.Notice-table th {
+	colspan : 3;
+	border-bottom: 1px solid;
+    border-color: var(--color-bd-outer);
+	
+}
+.Notice-table td {
+	border-bottom: 1px solid;
+    border-color: var(--color-bd-outer);
+	
+}

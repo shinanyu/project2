@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdminPage</title>
+<link rel="stylesheet" href="../css/header.css">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<body>
+<div class="wrapper">
+	<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<div style="text-align: center;">
+		<h2>자격증 확인</h2>
+		<table style="width: 700px; margin: 0 auto;">
+			<tr>
+				<th>자격증 이름</th>
+				<th width=150>발급 기관</th>
+				<th width=100>등록일</th>
+			</tr>
+			<tr th:each="list : ${list}">
+				<td th:text="${list.certName}"></td>
+				<td th:text="${list.certDepart}"></td>
+				<td th:text="${list.certReg}"></td>
+			</tr>
+		</table>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

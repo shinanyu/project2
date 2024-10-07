@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>공지사항 목록</title>
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/main.css">
+<link rel="stylesheet" href="../css/noticeboard/noticelist.css">
+</head>
+<body>
+<th:block layout:fragment="header" th:include="@{/header}"></th:block>
+<div class="wrapper">
+	<div class="board-table" align="center">
+	    <h1>공지사항</h1>
+	    <table class="board-table">
+	    	<tr>
+	    		<th class="th-title">제목</th>
+	    		<th class="th-date">작성일</th>
+	    	</tr>
+	    	<tr th:each="notice : ${notices}">
+	    		<td><a th:href="@{/noticelist/detail/{id}(id=${notice.nbNo})}" th:text="${notice.nbTitle}"></a></td>
+	    		<td th:text="${#dates.format(notice.nbDate, 'yyyy-MM-dd HH:mm')}"></td>
+	    	</tr>
+	    </table>
+	    <nav>
+	        <ul class="paging">
+	            <li class="active" th:if="${currentPage > 0}">
+	                <a class="a" th:href="@{/noticelist(page=${currentPage - 1}, size=${size})}">&laquo; 이전</a>
+	            </li>
+	            <li class="active" th:each="i : ${#numbers.sequence(0, totalPages - 1)}" th:class="${i == currentPage ? 'active' : ''}">
+	                <a class="a" th:href="@{/noticelist(page=${i}, size=${size})}" th:text="${i + 1}"></a>
+	            </li>
+	            <li class="active" th:if="${currentPage < totalPages - 1}">
+	                <a class="a" th:href="@{/noticelist(page=${currentPage + 1}, size=${size})}">다음 &raquo;</a>
+	            </li>
+	        </ul>
+		</nav>
+	</div>
+	<div>
+		<input type="button" value="글작성" onclick="location.href='/noticelist/admin/add'" sec:authorize="hasRole('ROLE_ADMIN')"/>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:include="@{/footer}"></th:block>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<script type="text/javascript" th:inline="javascript">
+window.onload = function() {
+	var returnclassno = /*[[${clnClno}]]*/'기본값';
+	alert("삭제 성공");
+	location.href = "/healthclass/detail/"+returnclassno;
+}	
+</script>
+</body>
+</html>

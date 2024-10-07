@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MyPage</title>
+<link rel="stylesheet" href="../css/header.css">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script th:inline="javascript">
+var memId = /*[[${memId}]]*/ null;
+</script>
+<script>
+//contextPath 길어서 변수 할당 
+var contextPath = "${pageContext.request.contextPath}";
+
+$(document).ready(function(){
+	getClassList(memId);
+});
+
+function getClassList(memId){
+	$.ajax({
+		type: "GET",
+		url: "getClassList/"+memId,
+		success: function(result){
+			var content = "<table width=600 style='text-align: center;'><tr><th>수업 이름</th><th width=100>강사 이름</th><th width=50></th><th width=50></th></tr>";
+				$.each(result.list,function(index,item){
+					content+= "<tr><td><a href='/healthclass/detail/" + item.mycClno + "' style='text-decoration: none;'>"+item.mycClname+"</a></td>"
+					content+= "<td>"+item.mycClmemname+"</td>"
+					content+= "<td><form action='/videoroomsstu' method='post' target='_black'>"
+					// csrf 타임리프 형식이라 jqeury 에서 못씀.. 
+					content+= "<input type='hidden' name='liveClno' value='"+item.mycClno+"'>"
+					content+= "<input type='hidden' name='liveName' value='"+item.mycClname+"'>"
+					content+= "<input type='submit' value='입장'></form></td>"
+					content+= "<td><input type='button' onClick='deleteClass("+item.mycNo+")' value='삭제'></td></tr>"
+				})
+				content+="</table>";
+				
+			$("#list").html(content);
+		}
+	});
+}
+
+function deleteClass(no){
+	// 취소 전 확인
+	var confirmation = confirm("수강을 취소하시겠습니까?");
+	if(confirmation){
+		$.ajax({
+			type: "GET",
+			url: "deleteClass/"+no,
+			success: function(result){
+				alert("수강 취소 하셨습니다.");
+				getClassList(memId);
+			}
+		});
+	}else{
+	}
+}
+</script>
+</head>
+<body>
+<div class="wrapper">
+	<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<div align="center" style="margin-top: 5px;">
+		<a th:href="@{/mypageL}"><input type="button" value="내정보"></a>
+		<a th:href="@{/classListP}"><input type="button" value="수강목록"></a>
+		<a th:href="@{/wishListP}"><input type="button" value="관심목록"></a>
+		<a th:href="@{/writeListP}"><input type="button" value="내가쓴글"></a>
+		<a sec:authorize="hasRole('ROLE_BUSINESS')" th:href="@{/myClassP}">
+		<input type="button" value="강의목록"></a>
+	</div>
+	<hr>
+	<h2 align="center">수강목록</h2>
+	<div id="list" align="center">
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

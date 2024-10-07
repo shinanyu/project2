@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MyPage</title>
+<link rel="stylesheet" href="../css/header.css">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<body>
+<div class="wrapper">
+	<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<div align="center" style="margin-top: 5px;">
+		<a th:href="@{/mypageL}"><input type="button" value="내정보"></a>
+		<a th:href="@{/classListP}"><input type="button" value="수강목록"></a>
+		<a th:href="@{/wishListP}"><input type="button" value="관심목록"></a>
+		<a th:href="@{/writeListP}"><input type="button" value="내가쓴글"></a>
+		<a sec:authorize="hasRole('ROLE_BUSINESS')" th:href="@{/myClassP}">
+		<input type="button" value="강의목록"></a>
+	</div>
+	<hr>
+	<div style="text-align: center;">
+		<h2>자격증 수정</h2>
+		<table style="width: 700px; margin: 0 auto;">
+			<tr>
+				<th width=100>자격증 이름</th>
+				<th width=100>발급 기관</th>
+				<th width=100>등록일</th>
+				<th width=100></th>
+			</tr>
+			<tr th:each="list : ${list}">
+				<form th:action="@{/updateRegCert}" method="post">
+					<input type="hidden" name="certNo" th:value="${list.certNo}">
+					<td><input type="text" name="certName" th:value="${list.certName}" placeholder="자격증 이름을 입력하세요" required></td>
+					<td><input type="text" name="certDepart" th:value="${list.certDepart}" placeholder="발급 기관을 입력하세요" required></td>
+					<td><input type="text" name="certReg" th:value="${list.certReg}" placeholder="ex)20240101" required></td>
+					<td><button type="submit">수정</button></td>
+				</form>
+			</tr>
+			<tr><td colspan="4"><a href="/addCert"><button>추가</button></a></td></tr>
+		</table>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

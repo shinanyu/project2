@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MyPage</title>
+<link rel="stylesheet" href="../css/header.css">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script th:inline="javascript">
+var memId = /*[[${memId}]]*/ null;
+</script>
+<script>
+//contextPath 길어서 변수 할당 
+var contextPath = "${pageContext.request.contextPath}";
+
+$(document).ready(function(){
+	UpdateUser(memId);
+});
+
+function UpdateUser(memId){
+	$.ajax({
+		type: "GET",
+		url: "updateMemForm/"+memId,
+		success: function(result){
+			// 서버로부터 받은 회원 정보(result)를 폼에 채우기
+            $('#join_name').val(result.editm.memName);
+            $('#join_nickname').val(result.editm.memNickname);
+            $('#join_tel').val(result.editm.memTel);
+            $('#join_birth').val(result.editm.memBirth);
+		}
+	});
+}
+
+//사용자 탈퇴하기
+function deleteMember(){
+	location.href="deleteMember";
+}
+
+// 비밀번호 변경
+function changePw(){
+	location.href="changePw";
+}
+// 자격증 수정
+function updateCert(){
+	location.href="updateCert";
+}
+</script>
+<script>
+function edit_check(){
+	var pattern = new RegExp(/^[a-z0-9_]+$/);
+	
+	if($.trim($("#join_pw").val())==""){
+		 alert("회원비번을 입력하세요!");
+		 $("#join_pw").val("").focus();
+		 return false;
+	 }
+	 if($.trim($("#join_name").val())==""){
+		 alert("회원이름을 입력하세요!");
+		 $("#join_name").val("").focus();
+		 return false;
+	 }
+	 if($.trim($("#join_nickname").val())==""){
+		 alert("닉네임을 입력하세요!");
+		 $("#join_nickname").val("").focus();
+		 return false;
+	 }
+	 if($.trim($("#join_birth").val())==""){
+		 alert("생년월일을 입력하세요!");
+		 $("#join_birth").val("").focus();
+		 return false;
+	 }
+	 else if (isNaN($("#join_birth").val())) {
+		alert("생년월일은 숫자만 입력 하세요.");
+		$("#join_birth").focus();
+		return false;
+	 }
+	 if($.trim($("#join_tel").val())==""){
+		 alert("연락처를 입력하세요!");
+		 $("#join_tel").val("").focus();
+		 return false;
+	 }
+	 else if(isNaN($("#join_tel").val())){
+			alert("전화번호는 숫자만 입력 하세요.");
+			$("#join_tel").focus();
+			return false;
+ 	}
+}
+</script>
+</head>
+<body>
+<div class="wrapper">
+	<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<div align="center" style="margin-top: 5px;">
+		<a th:href="@{/mypageL}"><input type="button" value="내정보"></a>
+		<a th:href="@{/classListP}"><input type="button" value="수강목록"></a>
+		<a th:href="@{/wishListP}"><input type="button" value="관심목록"></a>
+		<a th:href="@{/writeListP}"><input type="button" value="내가쓴글"></a>
+		<a sec:authorize="hasRole('ROLE_BUSINESS')" th:href="@{/myClassP}">
+		<input type="button" value="강의목록"></a>
+	</div>
+	<hr>
+	<div id="edit" class="login" align="center">
+	<h2 class="join_title">회원수정</h2>
+	<form name="eidtform" method="post" action="/member_edit.do"
+		onsubmit="return edit_check()" enctype="multipart/form-data">
+		<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+		<input type="hidden" name="memId" th:value="${memId}">
+		<table id="join_t">
+			<tr>
+				<th>회원아이디</th>
+				<td th:text="${memId}"></td>
+			</tr>
+			<tr>
+				<th>비밀번호 확인</th>
+				<td><input type="password" name="memPw" id="join_pw" size="14" class="input_box" /></td>
+			</tr>
+			<tr>
+				<th>회원이름</th>
+				<td><input name="memName" id="join_name" size="14" class="input_box"/></td>
+			</tr>
+			<tr>
+				<th>닉네임</th>
+				<td><input name="memNickname" id="join_nickname" size="10" class="input_box" /></td>
+			</tr>
+			<tr>
+				<th>생년월일</th>
+				<td><input name="memBirth" id="join_birth" size="10" class="input_box" /></td>
+			</tr>
+			<tr>
+				<th>연락처</th>
+				<td><input name="memTel" id="join_tel" class="input_box"/></td>
+			</tr>
+		</table>
+		<div id="eidt_menu">
+			<input type="submit" value="회원수정" class="input_button" />
+			<input type="reset" value="수정취소" class="input_button" onclick="$('#join_pw').focus();" />
+			<input type="button" sec:authorize="hasRole('ROLE_BUSINESS')" value="자격증 수정" onClick="updateCert()" />
+			<input type="button" value="비밀번호 변경" onClick="changePw()" />
+			<input type="button" value="회원탈퇴" onClick="deleteMember()" />
+		</div>
+	</form>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

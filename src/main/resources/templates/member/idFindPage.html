@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IDFind</title>
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/loginForm.css"></link>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+function check(){
+	// 이름
+	if($("#memName").val() == ""){
+		alert("이름을 입력 하세요");
+		$("#memName").focus();
+		return false;
+	}	
+	// 전화번호	
+	if($("#memTel").val() == ""){
+		alert("전화번호를 입력하세요.");
+		$("#memTel").focus();
+		return false;
+	}
+	else if(isNaN($("#memTel").val())){
+		alert("전화번호는 숫자만 입력하세요.");
+		return false;
+	}
+}
+</script>
+</head>
+<body>
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+<div class="wrapper">
+	<div class="login-page">
+		<div class="login-content login-content-signin">
+			<h2>아이디 찾기</h2>
+			<form action="find_id.do" method="post" onSubmit="return check()" class="wrapper-box" role="form">
+				Name:<input type="text" id="memName" name="memName"
+				  class="form-control form-control-email"
+				  placeholder="본인 이름을 입력하세요."
+				  required><br>
+				Tel:<input type="text" id="memTel" name="memTel"
+				  class="form-control form-control-password"
+				  placeholder="전화번호를 입력하세요."
+				  required>
+			<button type="submit" class="btn btn-submit btn-default pull-right">ID찾기</button>
+			</form>
+		</div>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

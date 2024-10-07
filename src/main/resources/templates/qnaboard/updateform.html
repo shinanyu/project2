@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>update Q&A</title>
+    <link rel="stylesheet" href="/css/header.css">
+</head>
+<body>
+<div class="wrapper">
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+    <div class="container" align="center">
+    	<h2 class="text-primary">질문 수정</h2>
+		<form action="/qnaboard/update"  method="post" onsubmit="return chk()" >
+        	<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+        	<input type="hidden" name="qnaNo" th:value="${qna.qnaNo}">
+        	<table class="table table-striped">
+        	<tr>
+				<td>제목</td>
+				<td><input type="text" name="qnaTitle" th:value="${qna.qnaTitle}" required  style="width: 900px; height: 25px;"/></td>
+			</tr>
+		  	<tr>
+				<td>내용</td>
+				<td><textarea name="qnaContent" th:text="${qna.qnaContent}" required  style="width: 900px; height: 450px;"></textarea></td>
+			</tr>
+        	<tr>
+        		<td>비밀글 설정</td>
+        		<td><input class="form-check-input" type="checkbox" name="isprivate" id="isprivate"></td>
+    		</tr>
+    		<tr>
+    			<td colspan="2" align="center">
+				<input type="submit" value="수정">
+				<input type="button" value="취소" onclick="location.href='/qnaboard'">
+				</td>
+    		</tr>
+    		</table>
+ 		</form>
+ 	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>loginForm</title>
+<link rel="stylesheet" href="../css/loginForm.css"></link>
+<link rel="stylesheet" href="../css/header.css">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+</head>
+<body>
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+<div class="wrapper">
+		<div class="login-page">
+		  	<div class="login-content login-content-signin">
+		      <h2>Log in</h2>
+		      <form  action="/login" method="post" name="loginForm" class="wrapper-box" role="form">
+		        <input type="text" id="memId" name="memId"
+		          class="form-control form-control-email"
+		          placeholder="Email address"
+		          required autofocus><br>
+		        <input type="password" id="memPw" name="memPw"
+		          class="form-control form-control-password"
+		          placeholder="Password"
+		          required >
+		          <br><br>
+		        <a class="outer-link pull-left" href= "/id_find" style="text-decoration: none;">Forgot Id</a>
+		        <a class="outer-link pull-left" href="/pw_find" style="text-decoration: none;">Forgot Password</a>
+		        <button type="submit" class="btn btn-submit btn-default pull-right">Log in</button>
+		      </form>
+		      <a href = "/oauth2/authorization/naver"><img src="image/naver.png" alt="네이버 로그인" style="weight: 50px; height: 50px;"></a>
+			  <a href = "/oauth2/authorization/google"><img src="image/google.png" alt="구글 로그인" style="weight: 50px; height: 50px;"></a><br>
+		    </div>
+		</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

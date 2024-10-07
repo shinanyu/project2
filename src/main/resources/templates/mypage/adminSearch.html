@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AdminPage</title>
+<link rel="stylesheet" href="../css/header.css">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<script>
+function confirmDelete(){
+	if(confirm("정말 삭제하시겠습니까?")){
+		return true;
+	}else{
+		return false;
+	}
+}
+</script>
+</head>
+<body>
+<div class="wrapper">
+	<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<div style="text-align: center;">
+		<h2>회원 리스트</h2>
+		<table style="width: 700px; margin: 0 auto;">
+			<tr>
+				<th>회원 ID</th>
+				<th width=100>회원 이름</th>
+				<th width=100>회원 닉네임</th>
+				<th width=100>탈퇴 여부</th>
+				<th width=100></th>
+			</tr>
+			<tr>
+				<td th:text="${mem.memId}"></td>
+				<td th:text="${mem.memName}"></td>
+				<td th:text="${mem.memNickname}"></td>
+				<td th:text="${mem.memActive == 'y' ? '활동' : '탈퇴'}"></td>
+				<td>
+					<form th:action="@{/deleteUser}" method="post" onSubmit="return confirmDelete()">
+						<input type="hidden" name="memId" th:value="${mem.memId}"/>
+						<button type="submit">삭제</button>
+					</form>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div>
+<form action="/admin/search" method="get">
+<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+	<input type="text" name="searchKeyword" id="searchKeyword" placeholder="닉네임 입력"/>
+	<input type="submit" value="검색">
+	</form>
+</div>
+
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

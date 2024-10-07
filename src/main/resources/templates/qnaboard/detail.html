@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Q&A Detail</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/header.css">
+<link rel="stylesheet" href="/css/qnaboard/detail.css">
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+	var owner = /*[[${owner}]]*/ null; // owner 값 가져오기
+	var role = /*[[${role}]]*/ null; // ROLE_ADMIN 여부 가져오기
+	
+	$(document).ready(function(){
+		if(owner === 'y' || role === 'ROLE_ADMIN'){ // 해당 강의의 강사 여부, ADMIN 계정
+			$("#deleteQna").show(); // owner가 'y'면 보이기
+		}else{
+			$("#deleteQna").hide(); // owner가 'y' 아니면 숨기기
+		}
+		if(owner === 'y'){
+			$("#updateQna").show();
+		}else{
+			$("#updateQna").hide();
+		}
+	});
+/*]]*/
+</script>
+</head>
+<body>
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+<div class="wrapper">
+<div class="contaner">
+	<div class="qnaboard">
+		<input type='button' value='목록' onClick="location.href='/qnaboard'">
+	</div>
+	<h1>Q&A</h1>
+	<div class="title-row">
+		<div class="title">
+			<a th:text="${qna.qnaTitle}"></a>
+		</div>
+	</div>
+	<div class="date">
+		<a th:text="${#dates.format(qna.qnaDate, 'yyyy-MM-dd HH:mm')}"></a>
+	</div>
+	<div class="content">
+		<a th:text="${qna.qnaContent}"></a>
+	</div>
+	<div id="deleteQna">
+	<form th:action="@{/qnaboard/delete/{id}(id=${qna.qnaNo})}" method="post" style="display: inline;">
+   		<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+		<input type="submit" value="삭제" onclick="return confirm('정말 삭제하시겠습니까?');" style="margin-left:10px;">
+	</form>
+	<input type="button" id="updateQna" value="수정" 
+		th:onclick="'location.href=\''+ @{/qnaboard/updateform/{qnaNo}(qnaNo=${qna.qnaNo})} + '\''" />
+	</div>
+	<div style="text-align: center;">
+		<h4>댓글</h4>
+	</div>
+   	<div th:if="${qnareplylist.size == 0}"  style="text-align: center;">
+		<a>댓글 없음.</a>
+	</div>
+
+	<div>
+		<table class="board-table" style="text-align: center;">
+			<thead th:unless="${qnareplylist.size == 0}"  >
+				<td>닉네임</td>
+				<td>내용</td>
+				<td>등록일</td>
+			</thead>
+           	<tbody>
+               <tr th:each = "qnar:${qnareplylist}">
+               	<td th:text="${qnar.qnarNickname}" style="text-align:center;"></td>
+               	<td style="text-align:center; width: 500px; height:50px;" th:text="${qnar.qnarContent}"></td>
+               	<td th:text="${#dates.format(qnar.qnarDate, 'yyyy-MM-dd HH:mm')}"></td>
+                   <td><button th:onclick="'location.href=\''+@{/qnareply/delete/{qnarOrigin}/{qnarNo}(qnarOrigin=${qnar.qnarOrigin}, qnarNo=${qnar.qnarNo})} + '\''"
+                   sec:authorize = "isAuthenticated()" id="deleteRe">댓글삭제</button></td>
+               </tr>
+           	</tbody>
+       	</table>
+	</div>
+
+	<div id="writeQnareply" sec:authorize="isAuthenticated()">
+		<form action="/qnareply/write.do" id="replyWrite" method="post">
+			<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+			<a>댓글작성</a>
+			<input type="textarea" name="qnarContent" style="width: 700px; height: 50px;" id="qnarContent" />
+			<input type="hidden" name="qnarOrigin" th:value="${qna.qnaNo}"/>
+			<input type="hidden" name="qnarWriter" th:value="${#authentication.getName()}"/>
+			<input type="submit" value="댓글등록" />
+		</form>
+	</div>
+</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

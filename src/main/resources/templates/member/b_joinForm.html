@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JoinForm</title>
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/loginForm.css"></link>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="../js/joinForm.js"></script>
+</head>
+<body>
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+<div class="wrapper">
+	<div class="login-page">
+		<div class="login-content login-content-signin">
+		     <h2>강사회원 회원가입</h2>
+		     <form  action="b_join" method="post" name="b_joinForm" class="wrapper-box" role="form" onSubmit="return check()">
+		     ID <input type="text" id="memId" name="memId"
+		       class="form-control form-control-email"
+		        placeholder="Email을 입력해주세요"
+		        required><input type="button" onClick="idcheck()" value="중복확인"><br>
+		        <span id="vaildEmail"></span><br>
+		      Password <input type="password" id="memPw" name="memPw"
+		        class="form-control form-control-password"
+		        placeholder="비밀번호를 입력해주세요"
+		        required ><br>
+		      Pw 확인 <input type="password" id="memPw2" name="memPw2"
+		      	class="form-control form-control-password"
+		        placeholder="한번 더 입력해주세요"
+		        required ><br>
+		      닉네임 <input type="text" id="memNick" name="memNickname"
+		        class="form-control form-control-password"
+		        placeholder="닉네임을 입력해주세요"
+		        required ><br>
+		      이름 <input type="text" id="memName" name="memName"
+		        class="form-control form-control-password"
+		        placeholder="이름을 입력해주세요"
+		        required ><br>
+		      생년월일 <input type="text" id="memBirth" name="memBirth"
+		        class="form-control form-control-password"
+		        placeholder="ex)990101"
+		        required ><br>
+		      전화번호 <input type="text" id="memTel" name="memTel"
+		        class="form-control form-control-password"
+		        placeholder="ex)01012341234"
+		        required ><br><hr>
+		        <h2>자격증 정보</h2>
+		      이름 <input type="text" id="certName" name="certName"
+		        class="form-control form-control-password"
+		        placeholder="자격증 이름"
+		        required ><br>
+		      등록날짜 <input type="text" id="certReg" name="certReg"
+		        class="form-control form-control-password"
+		        placeholder="ex)20240101"
+		        required ><br>
+		      발급기관 <input type="text" id="certDepart" name="certDepart"
+		        class="form-control form-control-password"
+		        placeholder="발급기관"
+		        required >
+		        <hr>
+		      <button type="submit" class="btn btn-submit btn-default pull-right">회원가입</button>
+		      <input type="hidden" name="_csrf" th:value="${_csrf?.token}"> 	
+		    </form>
+		</div>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

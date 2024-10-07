@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+		xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<link rel="stylesheet" href="/css/header.css">
+<link rel="stylesheet" href="/css/healthclass/detail.css">
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script th:inline="javascript">
+/*<![CDATA[*/
+	var owner = /*[[${owner}]]*/ null; // owner 값 가져오기
+	var study = /*[[${study}]]*/ null; // study 값 가져오기
+	
+	$(document).ready(function(){
+		if(owner === 'y'){ // 해당 강의의 강사 여부
+			$("#startClass").show(); // owner가 'y'면 보이기
+			$("#deleteClass").show();
+			$("#updateClass").show();
+			$("#writeNotice").show();
+			$("#addClass").hide();
+			$("#addWish").hide();
+		}else{
+			$("#startClass").hide(); // owner가 'y' 아니면 숨기기
+			$("#deleteClass").hide();
+			$("#updateClass").hide();
+			$("#writeNotice").hide();
+		}
+		if(study === 'o'){ // 수강 여부
+			$("#studyClass").show(); // study가 'y'면 보이기
+		}else{
+			$("#studyClass").hide(); // study가 'y'아니면 숨기기
+		}
+		
+		$(".clnNoticeDel").each(function(){
+			if(owner === 'y'){ // 해당 강의의 강사 여부
+				$(this).show();
+			}else{
+				$(this).hide();
+			}
+		});
+		
+	});
+/*]]*/
+
+</script>
+</head>
+<style>
+	td {
+	padding : 10px;
+	text-align : center;
+}
+</style>
+<body>
+<div class="wrapper">
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+<input type="button" value="목록으로" th:onclick="'location.href=\''+ @{/healthclass/All/1} + '\''" />
+<div class="title-row" align="center">
+	<div class="title">
+		<a th:text="${healthclass.clName}"></a>
+	</div>
+</div>
+<div>
+	<div class="top">
+		<div class="image">
+			<image th:src="@{/upload/image/thumbnail/}+${healthclass.clNo} + @{_}+${healthclass.clThumbnail}" style="width:300px; height:300px;"
+			  			alt="저장된 이미지 없음"/>
+		</div>
+		<div class="trainer">
+			<div>
+				<image th:src="@{/upload/image/profile/}+${healthclass.clNo} + @{_}+${healthclass.clProfile}" style="width:200px; height:200px;"
+			  			alt="저장된 이미지 없음"/>
+			</div>
+		</div>
+	</div>
+	<div class="contain">
+		<a th:text="|강사명 : ${healthclass.clMemname}|"></a>
+	</div>
+	<div class="contain">
+		<a th:text="|강의타입 : ${healthclass.clType}|"></a>
+	</div>
+	<div class="contain">
+		<a th:text="|강의요일 : ${healthclass.clDay}|"></a>
+		/
+		<a th:text="|시작시간 : ${healthclass.clStart}|"></a>
+		/
+		<a th:text="|소요시간(분) : ${healthclass.clTime} |"></a>
+	</div>
+	<div class="contain" style="height : 250px;">
+		<div>
+			<a>강의소개 : </a>
+			<a th:text="|${healthclass.clIntro}|"></a>
+		</div>
+	</div>
+</div>
+<div style="height: 30px;">
+	<div style="float: left;">
+		<input type="button" id="addClass" value="수강신청" th:onClick="'location.href=\''+ @{/mypage/regClass/{cl_no}(cl_no=${healthclass.clNo})} + '\''" sec:authorize="isAuthenticated()" />
+		<input type="button" id="addWish" value="관심등록" th:onClick="'location.href=\''+ @{/mypage/regWish/{cl_no}(cl_no=${healthclass.clNo})} + '\''"sec:authorize="isAuthenticated()" />
+		<input type="button" id="deleteClass" value="강의삭제" sec:authorize="isAuthenticated()" 
+			th:onclick="'location.href=\''+ @{/healthclass/delete/{cl_no}(cl_no=${healthclass.clNo})} + '\''" />
+		
+		<input type="button" id="updateClass" value="강의수정" sec:authorize="isAuthenticated()" 
+			th:onclick="'location.href=\''+ @{/healthclass/updateform/{cl_no}(cl_no=${healthclass.clNo})} + '\''" />
+	</div>
+	<div style="float: left;">
+		<form id="startClass" action="/videoroomtest" method="post" target="_blank" sec:authorize="isAuthenticated()">
+			<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+			<input type="hidden" name="liveClno" th:value="${healthclass.clNo}">
+			<input type="hidden" name="liveName" th:value="${healthclass.clName}">
+			<input type="hidden" name="liveThumbnail" th:value="${healthclass.clThumbnail}">
+			<input type="submit" value="강의시작">
+		</form>
+		<form id="studyClass" action="/videoroomsstu" method="post" target="_blank" sec:authorize="isAuthenticated()">
+			<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+			<input type="hidden" name="liveClno" th:value="${healthclass.clNo}">
+			<input type="hidden" name="liveName" th:value="${healthclass.clName}">
+			<input type="submit" value="강의듣기">
+		</form>
+	</div>
+</div>
+
+<div class="Notice" id="writeNotice">
+	<div><a>공지작성</a>
+		<form id="wn" action="/classnotice/write.do" method="post" sec:authorize="isAuthenticated()">
+			<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+			<input type="textarea" style="width: 700px; height: 80px;" name="clnContent" id="clnContent" />
+			<input type="hidden" name="clnClno" th:value="${healthclass.clNo}"/>
+			<button type="submit" form="wn">공지등록</button>
+		</form>
+	</div>
+</div>
+<div>
+	<h4 style="margin : 10px; padding: 10px;" align="center">강의 공지사항</h4>
+	
+	<table class="Notice-table">
+		<thead th:unless="${noticelist.size == 0}"  >
+					<td>공지내용</td>
+					<td>등록일</td>
+					<td></td>
+		</thead>
+		<tr th:each = "classnotice:${noticelist}">
+			<td th:text="${classnotice.clnContent}" style="text-align:center; width: 500px; height:50px;" ></td>
+			<td th:text="${#dates.format(classnotice.clnDate, 'yyyy-MM-dd HH:mm')}"></td>
+			<td><button th:onclick="'location.href=\''+@{/classnotice/delete/{clnClno}/{clnNo}(clnClno=${healthclass.clNo}, clnNo=${classnotice.clnNo})} + '\''"
+	        		 sec:authorize = "isAuthenticated()" class="clnNoticeDel">공지삭제</button></td>
+		</tr>
+	</table>
+	<div th:if="${noticelist.size == 0}"  style="text-align: center;">
+			<a>공지사항 없음.</a>
+	</div>
+</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+
+</html>

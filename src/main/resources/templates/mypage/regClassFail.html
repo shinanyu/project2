@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<script th:inline="javascript">
+		var clno = /*[[${clno}]]*/ null;
+		alert("이미 등록하셨습니다.");
+		location.href = "/healthclass/detail/"+clno;
+	</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+		xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<link rel="stylesheet" href="/css/header.css">
+<link rel="stylesheet" href="/css/healthclass/list.css" >
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<body>
+<div class="wrapper">
+<th:block layout:fragment="header" th:replace="~{@{/header}}"></th:block>
+    <div class="container" align="center" th:switch=${listCategory}>
+        <h1 class="text-primary" th:case="'All'" align="center">검색결과(전체)</h1>
+        <h1 class="text-primary" th:case="'Yoga'" align="center">검색결과(요가)</h1>
+        <h1 class="text-primary" th:case="'Pilates'" align="center" >검색결과(필라테스)</h1>
+        <h1 class="text-primary" th:case="'Health'" align="center" >검색결과(헬스)</h1>
+        <h1 class="text-primary" th:case="'Senior'" align="center" >검색결과(시니어)</h1>
+        <h1 class="text-primary" th:case="'Rehabilitation'" align="center" >검색결과(재활)</h1>
+        <table class="board-table">
+            <thead>
+                <tr>
+                    <th class="th-date">강의타입</th>
+                    <th class="th-title">강의명</th>
+                    <th>강사명</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each = "healthclass:${selectlist}">
+                	<td th:text="${healthclass.clType}"></td>
+                    <td>
+                    <a th:text="${healthclass.clName}" th:href="@{/healthclass/detail/{cl_no}(cl_no=${healthclass.clNo})}"></a>
+                    </td>
+                    <td th:text="${healthclass.clMemid}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+      <nav style="text-align: center;">
+    <ul class="paging">
+    	<li class="active">
+        	<a class="a" th:href="@{/healthclass/search(pageNum=1, listCategory=${listCategory},
+        	searchCategory=${searchCategory}, searchKeyword=${searchKeyword}, searchDay=${searchDay})}">1페이지로</a>
+        </li>
+        <li class="active" th:if="${pp.startPage < pp.currentPage }">
+        	<a class="a" th:href="@{/healthclass/search(pageNum=${pp.currentPage}, listCategory=${listCategory},
+        	searchCategory=${searchCategory}, searchKeyword=${searchKeyword}, searchDay=${searchDay})}"></a>
+        </li>
+        <li class="active" th:if="${pp.currentPage > pp.pagePerBlk }">
+		 	<a class="a" th:href="@{/healthclass/search(pageNum=${pp.currentPage - pp.pagePerBlk}, listCategory=${listCategory},
+		 	searchCategory=${searchCategory}, searchKeyword=${searchKeyword}, searchDay=${searchDay})}">이전</a>
+		 </li>
+        <li class="active" th:each="page:${#numbers.sequence(pp.startPage, pp.endPage)}">
+        	<a class="a" th:href="@{/healthclass/search(pageNum=${page}, listCategory=${listCategory},
+        	searchCategory=${searchCategory}, searchKeyword=${searchKeyword}, searchDay=${searchDay})}"
+        	 th:text="${page}" ></a>
+        </li>
+
+        <li class="active" th:if="${pp.endPage < pp.totalPage}">
+            <a class="a" th:href="@{/healthclass/search(pageNum=${pp.endPage + 1}, listCategory=${listCategory},
+            searchCategory=${searchCategory}, searchKeyword=${searchKeyword}, searchDay=${searchDay})}">다음</a>
+		</li>
+		<li class="active">
+            <a class="a" th:href="@{/healthclass/search(pageNum=${pp.totalPage}, listCategory=${listCategory},
+            searchCategory=${searchCategory}, searchKeyword=${searchKeyword}, searchDay=${searchDay})}">마지막페이지로</a>
+		</li>
+    </ul>
+</nav>
+<div>
+	<form action="/healthclass/search" method="get">
+	<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+	<select class="box" name="searchCategory" id="searchCategory">
+  		<option value="강의명" th:selected="${searchCategory} == '강의명'">강의명</option>
+  		<option value="강사명" th:selected="${searchCategory} == '강사명'">강사명</option>
+  		<option value="요일" th:selected="${searchCategory} == '요일'">요일</option>
+	</select>
+	<input type="text" name="searchKeyword" id="searchKeyword" placeholder="입력" 
+	th:value="${searchKeyword}" minlength="2"/>
+	<select class="box" name="searchDay" id="searchDay">
+		<option value="Monday" th:selected="${searchDay} == 'Monday'">월요일</option>
+  		<option value="Tuesday" th:selected="${searchDay} == 'Tuesday'">화요일</option>
+  		<option value="Wednsday" th:selected="${searchDay} == 'Wednsday'">수요일</option>
+  		<option value="Thursday" th:selected="${searchDay} == 'Thursday'">목요일</option>	
+  		<option value="Friday" th:selected="${searchDay} == 'Friday'">금요일</option>
+  		<option value="Saturday" th:selected="${searchDay} == 'Saturday'">토요일</option>
+  		<option value="Sunday" th:selected="${searchDay} == 'Sunday'">일요일</option>	
+	</select>
+	<input type="hidden" name="pageNum" value="1" /> 
+	<input type="hidden" name="listCategory" th:value="${listCategory}"/>
+	<input type="submit" value="검색">
+	</form>
+	<input type="button" value="목록으로" th:onclick="'location.href=\''+ @{/healthclass/{listCategory}/1(listCategory=${listCategory})} + '\''" />
+</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+<script th:inline="javascript">
+window.onload = function() {
+	var searchCategory = /*[[${searchCategory}]]*/'기본값';
+	var searchKeyword = document.getElementById("searchKeyword");
+	var searchDay = document.getElementById("searchDay");
+	if ( "요일" == searchCategory ) {
+		searchKeyword.style.display = "none";
+		searchDay.style.display = "inline-block";
+	}
+	else {
+		searchKeyword.style.display = "inline-block";
+		searchDay.style.display = "none";
+	}
+	document.getElementById("searchCategory").addEventListener('change', (event) =>{
+		if ( document.getElementById("searchCategory").value == "강의명"  || document.getElementById("searchCategory").value == "강사명") {
+			searchKeyword.style.display = "inline-block";
+			searchDay.style.display = "none";
+		}	
+		else {
+			searchKeyword.value = "";
+			searchKeyword.style.display = "none";
+			searchDay.style.display = "inline-block";
+		}
+	});
+}
+</script>
+</html>

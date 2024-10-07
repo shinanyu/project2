@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>JSFLUX</title>
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/webrtc-adapter/6.4.0/adapter.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"></script>
+  <script type="text/javascript"
+    src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+  <script type="text/javascript" src="../js/janus.js"></script>
+  <script type="text/javascript" src="../js/videoroomtest.js?ver=12"></script>
+  <script>
+    $(function () {
+      $(".navbar-static-top").load("navbar.html", function () {
+        $(".navbar-static-top li.dropdown").addClass("active");
+        $(".navbar-static-top a[href='videoroomtest.html']").parent().addClass("active");
+      });
+      $(".footer").load("footer.html");
+    });
+  </script>
+  <script th:inline="javascript">
+	/*<![CDATA[*/
+		var owner = /*[[${owner}]]*/ null; // owner 값 가져오기
+		var liveclno = /*[[${liveclno}]]*/'';
+		
+		$(document).ready(function(){
+			if(owner === 'y'){ // 해당 강의의 강사 여부
+				$("#finishClass").show(); // owner가 'y'면 끝내기 보이기
+				$("#exitClass").hide(); // owner가 'y'면 나가기 숨기기
+			}else{
+				$("#finishClass").hide(); // owner가 'y' 아니면 끝내기 숨기기
+				$("#exitClass").show(); // owner가 'y'면 나가기 보이기
+			}
+		});
+	/*]]*/
+		window.addEventListener('beforeunload', function (e) {
+		   // 강의를 종료하는 동작을 수행한다(브라우저 종료전에)
+		   endClass(liveclno);
+		});
+		// Liveroom DB삭제
+		function endClass(liveclno){
+			$.ajax({
+				type: "POST",
+				url: "/delete/"+liveclno,
+				success: function(result){
+				}
+			});
+		}
+</script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cerulean/bootstrap.min.css"
+    type="text/css" />
+  <link rel="stylesheet" href="css/demo.css" type="text/css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" />
+  <style>
+    table {
+      width: 100%;
+      border-top: 1px solid #bdbcbc;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid #bdbcbc;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container1" >  
+  <nav class="navbar navbar-default navbar-static-top">
+  </nav>
+
+  <div class="container" style="width : 70%; float:left; margin-right: 5%; margin-left : 5%;">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="page-header">
+          <h1>화상강의
+            <button class="btn btn-default" autocomplete="off" id="exitClass" onClick="window.close()">강의 나가기</button>
+            <button class="btn btn-default" autocomplete="off" id="finishClass" 
+            		th:onClick="'location.href=\''+ @{/delete/{liveclno}(liveclno=${liveclno})} + '\''">강의 끝내기</button>
+          </h1>
+        </div>
+        <div class="container22 hide" id="videojoin">
+          <div class="row">
+            <div class="col-md-12" id="controls">
+              <div id="registernow">
+                <span class="label label-info" id="room"></span>
+                <div class="input-group margin-bottom-md " style="width: 100% !important;">
+                  <input autocomplete="off" class="form-control" type="hidden" th:value="${liveclno}" placeholder="Room Name" id="roomname" readonly/>
+                </div>
+                <span class="label label-info" id="you"></span>
+                <div class="input-group margin-bottom-md ">
+                  <span class="input-group-addon">대화명</span>
+                  <input autocomplete="off" class="form-control" type="text" th:value="${nickname}" placeholder="닉네임을 입력하세요" id="username"
+                    onkeypress="return checkEnter(this, event);" />
+                  <span class="input-group-btn">
+                    <button class="btn btn-success" autocomplete="off" id="register">대화방 참여</button>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container hide" id="videos" style="width : 100%; float:left; margin-right: 5%; margin-left : 5%;">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Local Video <span class="label label-primary hide" id="publisher"></span>
+                    <div class="btn-group btn-group-xs pull-right hide">
+                      <div class="btn-group btn-group-xs">
+                        <button id="bitrateset" autocomplete="off" class="btn btn-primary dropdown-toggle"
+                          data-toggle="dropdown">
+                          Bandwidth<span class="caret"></span>
+                        </button>
+                        <ul id="bitrate" class="dropdown-menu" role="menu">
+                          <li><a href="#" id="0">No limit</a></li>
+                          <li><a href="#" id="128">Cap to 128kbit</a></li>
+                          <li><a href="#" id="256">Cap to 256kbit</a></li>
+                          <li><a href="#" id="512">Cap to 512kbit</a></li>
+                          <li><a href="#" id="1024">Cap to 1mbit</a></li>
+                          <li><a href="#" id="1500">Cap to 1.5mbit</a></li>
+                          <li><a href="#" id="2000">Cap to 2mbit</a></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </h3>
+                </div>
+                <div class="panel-body" id="videolocal"></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Remote Video #1 <span class="label label-info hide" id="remote1"></span></h3>
+                </div>
+                <div class="panel-body relative" id="videoremote1"></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Remote Video #2 <span class="label label-info hide" id="remote2"></span></h3>
+                </div>
+                <div class="panel-body relative" id="videoremote2"></div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Remote Video #3 <span class="label label-info hide" id="remote3"></span></h3>
+                </div>
+                <div class="panel-body relative" id="videoremote3"></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Remote Video #4 <span class="label label-info hide" id="remote4"></span></h3>
+                </div>
+                <div class="panel-body relative" id="videoremote4"></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Remote Video #5 <span class="label label-info hide" id="remote5"></span></h3>
+                </div>
+                <div class="panel-body relative" id="videoremote5"></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Remote Video #6 <span class="label label-info hide" id="remote6"></span></h3>
+                </div>
+                <div class="panel-body relative" id="videoremote6"></div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h3 class="panel-title">Remote Video #7 <span class="label label-info hide" id="remote7"></span></h3>
+                </div>
+                <div class="panel-body relative" id="videoremote7"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>    
+  </div>
+  <div class="container2">
+    <th:block th:fragment="content">
+      
+    <div class="container12">
+        <div class="col-6">
+            <h3>[[${roomName}]]</h3>
+        </div>
+           
+            <ul class="list-group" id="msgArea">
+            </ul>
+            
+            <div class="col-6">
+                <div class="input-group mb-2">
+                  <input type="text" th:value="${nickname}" placeholder="닉네임 입력" style="width : 100%;"/></br>
+                    <input type="text" id="msg" style="width : 100%;" onkeyup="enterkey();" placeholder="전송내용 입력"></br>
+                    <button class="btn btn-outline-secondary" type="button" id="button-send">전송</button>
+                </div>
+           </div>
+        </div>
+    </div>
+  </th:block>
+  </div><!-- container2 끝-->
+</div> <!-- container1끝 -->
+</body>
+ <style>
+ #msgArea{
+  width : 95%;
+  	height:  60vh; /* 전체 화면의 높이의 70% */
+    overflow-y: auto;
+    margin : 0;
+    padding : 0;
+  }
+  
+  .container2 {
+    width: 20%;
+    max-width: 20%;
+    float: left;
+    padding-right: 0;
+    margin-right: 0;
+  }
+  
+ </style>
+ <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script th:inline="javascript">
+          
+          var roomName = /*[[${room.roomName}]]*/'';
+          var roomId = /*[[${room.roomId}]]*/'';
+          var username = /*[[${nickname}]]*/'';
+          
+          var sockJs = new SockJS("/stomp/chat");
+          var stomp = Stomp.over(sockJs);
+          function enterkey() {
+            if (window.event.keyCode == 13) {
+               
+              var msg = document.getElementById("msg");
+          if ( msg.value.length < 1) {
+            alert("전송할 내용을 입력하세요.");
+            return false;
+          }
+                  stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, writer: username}));
+                  msg.value = '';
+             }
+          }
+          function click() {
+        	     var msg = document.getElementById("msg");
+                 if ( msg.value.length < 1) {
+                   alert("전송할 내용을 입력하세요.");
+                   return false;
+                 }
+                         stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, writer: username}));
+                         msg.value = '';
+          }
+              $(document).ready(function(){
+                  //2. connection이 맺어지면 실행
+                  stomp.connect({}, function (){
+                     console.log("STOMP Connection")
+  
+                     //4. subscribe(path, callback)으로 메세지를 받을 수 있음
+                     stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
+                         var content = JSON.parse(chat.body);
+  
+                         var writer = content.writer;
+                         var message = content.message;
+                         var str = '';
+                         var msg = document.getElementById("msg");
+              
+                         if(writer === username){
+                            str = '<li class="list-group-item">';
+                            str += "<b>" + writer + "  : " + message + "</b>";
+                            str += "</li>";
+                            $("#msgArea").append(str);
+                        }
+                        else if ( writer == "NOTICE"){
+                             str = '<li class="list-group-item list-group-item-info">';
+                             str += "<b>" + writer + "  : " + message + "</b>";
+                             str += "</li>";
+                             $("#msgArea").append(str);
+                         }
+                        else {
+                          str = '<li class="list-group-item list-group-item-warning">';
+                              str += "<b>" + writer + "  : " + message + "</b>";
+                              str += "</li>";
+                              $("#msgArea").append(str);
+                        }
+  
+                       $('#msgArea').scrollTop($('#msgArea')[0].scrollHeight);
+                     });
+  
+                     //3. send(path, header, message)로 메세지를 보낼 수 있음
+                     stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: username}))
+                  });
+  
+                  $("#button-send").on("click", click);
+              });
+          </script>
+  </html>

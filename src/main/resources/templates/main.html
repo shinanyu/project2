@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>main page</title>
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/main.css">
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+</head>
+<body>
+<div class="wrapper">
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<h4 th:value="${id}"></h4>
+	<div style="padding:15px 25px; background-color: skyblue;">
+		<div class='slider-div' id="LiveList">
+			<div th:each="list :${livelist}">
+				<a th:href="@{/healthclass/detail/{clNo}(clNo=${list.liveClno})}">
+	  			<image th:src="@{/upload/image/thumbnail/}+${list.liveClno} + @{_}+${list.liveThumbnail}" 
+	  			style="width:200px; height:200px;" alt="저장된 이미지 없음"/>
+	  			</a>
+	  			[[${list.liveName}]]
+			</div>
+		</div>
+		<div th:if="${livelist.size == 0}" >
+			<h3 style="text-align: center;">현재 진행중인 강의가 없습니다.</h3>
+		</div>
+	</div>
+	<div class="container" align="center">
+		<div id="MainboardList" class="MainboardList"></div>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+<script type="text/javascript">
+window.onload = function() {
+	MainboardList();
+}
+$(function(){
+	$('.slider-div').not('.slick-initialized').slick({
+		slide: 'div',		//슬라이드 되어야 할 태그 ex) div, li 
+		vertical : false,		// 세로 방향 슬라이드 옵션
+		centerMode: true,
+		centerPadding: '70px',
+		infinite : true, 	//무한 반복 옵션	 
+		slidesToShow : 4,		// 한 화면에 보여질 컨텐츠 개수
+		slidesToScroll : 1,		//스크롤 한번에 움직일 컨텐츠 개수
+		speed : 100,	 // 다음 버튼 누르고 다음 화면 뜨는데까지 걸리는 시간(ms)
+		arrows : true, 		// 옆으로 이동하는 화살표 표시 여부
+		autoplay : true,			// 자동 스크롤 사용 여부
+		autoplaySpeed : 10000, 		// 자동 스크롤 시 다음으로 넘어가는데 걸리는 시간 (ms)
+		pauseOnHover : true,		// 슬라이드 이동	시 마우스 호버하면 슬라이더 멈추게 설정
+		prevArrow : "<button type='button' class='slick-prev'>Previous</button>",		// 이전 화살표 모양 설정
+		nextArrow : "<button type='button' class='slick-next'>Next</button>",		// 다음 화살표 모양 설정
+		draggable : true, 	//드래그 가능 여부 
+		
+		responsive: [ // 반응형 웹 구현 옵션
+			{  
+				breakpoint: 960, //화면 사이즈 960px
+				settings: {
+					//위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
+					slidesToShow:3 
+				} 
+			},
+			{ 
+				breakpoint: 768, //화면 사이즈 768px
+				settings: {	
+					//위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
+					slidesToShow:2 
+				} 
+			}
+		]
+	});
+})
+
+function MainboardList(){
+	$.ajax({
+		type : "GET",
+		url : "/MainboardList",
+		success : function(result){
+			content = "<table class='noticetable'><tr><th colspan='2'>공지사항</th></tr>";
+			$.each(result.nblist,function(index,item){
+				content += "<tr><td><a class='a' href='/noticelist/detail/"+item.nbNo+"'>"+item.nbTitle+"</td>";
+				content += "<td>"+moment(item.nbDate).format("YYYY-MM-DD HH:mm:ss")+"</td></tr>";
+			});
+			content += "</table>";
+			
+			$("#MainboardList").html(content);
+		}
+	});
+}
+
+</script>
+</html>

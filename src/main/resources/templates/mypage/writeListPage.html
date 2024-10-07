@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MyPage</title>
+<link rel="stylesheet" href="../css/header.css">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script th:inline="javascript">
+var memId = /*[[${memId}]]*/ null;
+</script>
+<script>
+//contextPath 길어서 변수 할당 
+var contextPath = "${pageContext.request.contextPath}";
+
+$(document).ready(function(){
+	getWriteList(memId);
+});
+
+function getWriteList(memId){
+	$.ajax({
+		type: "GET",
+		url: "getWriteList/"+memId,
+		success: function(result){
+			var content = "<table width=700 style='text-align: center;'><tr><th>제목</th><th width=150>닉네임</th><th width=150>작성일</th></tr>";
+			$.each(result.list, function(index,item){
+				content+= "<tr><td><a href='/qnaboard/detail/"+item.qnaNo+"' style='text-decoration: none;'>"+item.qnaTitle+"</a></td>"
+				content+= "<td>"+item.qnaNickname+"</td>"
+				content+= "<td>"+formatDate(item.qnaDate)+"</td></tr>";
+			});
+				content+= "</table>";
+			$("#list").html(content);
+		}
+	});
+}
+// 날짜변환
+function formatDate(dataString){
+	var date = new Date(dataString);
+	var year = date.getFullYear();
+	var month = (date.getMonth()+1 < 10 ? '0' : '') + (date.getMonth() + 1);
+	var day = (date.getDate() < 10 ? '0' : '') + date.getDate();
+	var hours = (date.getHours() < 10 ? '0' : '') + date.getHours();
+	var minutes = (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+	return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes;
+}
+</script>
+</head>
+<body>
+<div class="wrapper">
+	<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<div align="center" style="margin-top: 5px;">
+		<a th:href="@{/mypageL}"><input type="button" value="내정보"></a>
+		<a th:href="@{/classListP}"><input type="button" value="수강목록"></a>
+		<a th:href="@{/wishListP}"><input type="button" value="관심목록"></a>
+		<a th:href="@{/writeListP}"><input type="button" value="내가쓴글"></a>
+		<a sec:authorize="hasRole('ROLE_BUSINESS')" th:href="@{/myClassP}">
+		<input type="button" value="강의목록"></a>
+	</div>
+	<hr>
+	<h2 align="center">내가쓴글</h2>
+	<div id="list" align="center">
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

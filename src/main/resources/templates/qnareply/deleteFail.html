@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org" >
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<script type="text/javascript" th:inline="javascript">
+	window.onload= function(){
+		var qnarOrigin = /*[[${qnarOrigin}]]*/'';
+		alert("댓글 작성자가 아닙니다.");
+		location.href = "/qnaboard/detail/"+qnarOrigin;
+	}
+	</script>
+</body>
+</html>

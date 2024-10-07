@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" >
+<head>
+<link rel="stylesheet" href="/css/header.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div class="wrapper">
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<div class="container" align="center">
+		<h2 class="text-primary">강의 작성</h2>
+		<form action="/healthclass/write" method="post" enctype="multipart/form-data"
+			onsubmit="return checkTypeDay()">
+			<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+			<table class="table table-striped">	
+				<tr>
+					<td>강의타입</td>
+					<td>
+					<select class="box" name="clType" id="clType">
+						<option value="" selected disabled hidden>선택</option>
+  						<option value="헬스">헬스</option>
+  						<option value="재활">재활</option>
+  						<option value="필라테스">필라테스</option>
+  						<option value="요가">요가</option>	
+  						<option value="시니어">시니어</option>
+					</select>
+					</td>
+				</tr>
+				<tr>
+					<td>강의명</td>
+					<td><input type="text" name="clName" required="required" style="width: 900px; height: 25px;"></td>
+				</tr>
+				<tr>
+					<td>내용</td>
+					<td><textarea rows="5" cols="30" name="clIntro" required="required" style="width: 900px; height: 450px;"></textarea></td>
+				</tr>
+				<tr>
+					<td>강의 요일</td>
+					<td>
+					<select class="box" name="clDay" id="clDay">
+						<option value="" selected disabled hidden>선택</option>
+  						<option value="Monday">월요일</option>
+  						<option value="Tuesday">화요일</option>
+  						<option value="Wednsday">수요일</option>
+  						<option value="Thursday">목요일</option>	
+  						<option value="Friday">금요일</option>
+  						<option value="Saturday">토요일</option>
+  						<option value="Sunday">일요일</option>
+					</select>
+					</td>
+				</tr>
+				<tr>
+					<td>시작시간</td>
+					<td>
+						<input type="number" max='23' min='0' name="cl_start1" required="required" style="width: 50px; height: 25px;">
+						:
+						<input type="number" max= '59' min='0' name="cl_start2" required="required" style="width: 50px; height: 25px;">
+					</td>
+				</tr>
+				<tr>
+					<td>소요시간(분)</td>
+					<td><input type="number" name="clTime" required="required" style="width: 70px; height: 25px;"></td>
+				</tr>
+				<!-- 프로필 사진 -->
+				<tr>
+					<td>강사사진</td>
+					<td>
+					<input type="file" name="profile" id="profile"/>
+					<ul class="profile-preview" id="profile-preview"></ul>
+					</td>
+					
+				</tr>
+				<tr>	
+					<td>강의 썸네일</td>
+					<td>
+					<input type="file" name="thumbnail" id="thumbnail"/>
+					<ul class="thumbnail-preview" id="thumbnail-preview"></ul>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+					<input type="submit" value="작성">
+					<input type="button" value="취소" onclick="back()">
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+<script>
+function back(){
+    history.back();
+}
+function getImageFilesProfile(e) {
+    const files = e.currentTarget.files;
+    const imagePreview = document.querySelector('.profile-preview');
+	document.getElementById("profile-preview").replaceChildren();
+    // 파일 타입 검사
+    [...files].forEach(file => {
+      if (!file.type.match("image/.*")) {
+        alert('이미지 파일만 업로드가 가능합니다.');
+        return;
+      } // if
+    
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const preview = createElement(e, file);
+          imagePreview.appendChild(preview);
+        }; //onload
+        reader.readAsDataURL(file);
+    }); // forEach
+  } //getImageFilesProfile
+  function getImageFilesThumbnail(e) {
+	    const files = e.currentTarget.files;
+	    const imagePreview = document.querySelector('.thumbnail-preview');
+		document.getElementById("thumbnail-preview").replaceChildren();
+	    // 파일 타입 검사
+	    [...files].forEach(file => {
+	      if (!file.type.match("image/.*")) {
+	        alert('이미지 파일만 업로드가 가능합니다.');
+	        return;
+	      } // if
+	    
+	        const reader = new FileReader();
+	        reader.onload = (e) => {
+	          const preview = createElement(e, file);
+	          imagePreview.appendChild(preview);
+	        }; //onload
+	        reader.readAsDataURL(file);
+	    }); // forEach
+	  } //getImageFilesThumbnail
+	  
+function createElement(e, file) {
+    const li = document.createElement('li');
+    const img = document.createElement('img');
+    img.setAttribute('src', e.target.result);
+    img.setAttribute('data-file', file.name);
+    img.setAttribute('width', 150);
+    img.setAttribute('height', 150);
+    li.appendChild(img);
+
+    return li;
+  }
+function checkTypeDay() {
+	if (document.getElementById("clType").value.length < 1) {
+		alert('강의타입을 선택하세요.');
+		return false;
+	}
+	if (document.getElementById("clDay").value.length < 1) {
+		alert('요일을 선택하세요.');
+		return false;
+	}
+	return true;
+}
+window.onload = function() {
+	document.getElementById("profile").addEventListener('change', getImageFilesProfile);
+	document.getElementById("thumbnail").addEventListener('change', getImageFilesThumbnail);
+}
+</script>
+</html>

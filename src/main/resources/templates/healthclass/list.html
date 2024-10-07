@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+		xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+
+<link rel="stylesheet" href="/css/header.css">
+<link rel="stylesheet" href="/css/healthclass/list.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<script>
+window.onload = function() {
+	var searchKeyword = document.getElementById("searchKeyword");
+	var searchDay = document.getElementById("searchDay");
+	var searchCategory = document.getElementById("searchCategory");
+	searchDay.style.display = "none";
+	searchCategory.addEventListener('change', (event) =>{
+		if ( searchCategory.value == "강의명"  || searchCategory.value == "강사명") {
+			searchKeyword.style.display = "inline-block";
+			searchDay.style.display = "none";
+		}	
+		else {
+			searchKeyword.value = "";
+			searchKeyword.style.display = "none";
+			searchDay.style.display = "inline-block";
+		}
+	});
+}
+
+</script>
+
+<body>
+<div class="wrapper">
+<th:block layout:fragment="header" th:replace="~{/header}"></th:block>
+    <div class="container" th:switch=${listCategory}>
+        <h2 th:case="'All'" align="center" >전체</h2>
+        <h2 th:case="'Yoga'" align="center" >요가</h2>
+        <h2 th:case="'Pilates'" align="center" >필라테스</h2>
+        <h2 th:case="'Health'" align="center" >헬스</h2>
+        <h2 th:case="'Senior'" align="center" >시니어</h2>
+        <h2 th:case="'Rehabilitation'" align="center" >재활</h2>
+    </div>
+        <input type="button" value="전체" onclick="location.href='/healthclass/All/1'" />
+        <input type="button" value="요가" onclick="location.href='/healthclass/Yoga/1'" />
+        <input type="button" value="필라테스" onclick="location.href='/healthclass/Pilates/1'" />
+        <input type="button" value="헬스" onclick="location.href='/healthclass/Health/1'" />
+        <input type="button" value="시니어" onclick="location.href='/healthclass/Senior/1'" />
+        <input type="button" value="재활" onclick="location.href='/healthclass/Rehabilitation/1'" />
+    <div>
+        <table class="board-table">
+            <thead>
+                <tr>
+                    <th class="th-type">강의타입</th>
+                    <th class="th-title">강의명</th>
+                    <th class="th-name">강사명</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each = "healthclass:${selectlist}">
+                	<td th:text="${healthclass.clType}"></td>
+                    <td>
+                    <a th:text="${healthclass.clName}" th:href="@{/healthclass/detail/{cl_no}(cl_no=${healthclass.clNo})}"></a></td>
+                    <td th:text="${healthclass.clMemname}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+    <nav style="text-align: center;">
+    <ul class="paging">
+    	<li class="active" th:if="${pp.currentPage >= 1}">
+        	<a class="a" th:href="@{/healthclass/{listCategory}/1(listCategory=${listCategory})}">&lt;&lt;</a>
+        </li>
+        <li class="active" th:if="${pp.startPage < pp.currentPage }">
+        	<a class="a" th:href="@{/healthclass/{listCategory}/{cur2}(cur2=${pp.currentPage}, listCategory=${listCategory})}"></a>
+        </li>
+        <li class="active" th:if="${pp.currentPage > pp.pagePerBlk }">
+		 	<a class="a" th:href="@{/healthclass/{listCategory}/{curminus}(curminus=${pp.currentPage - pp.pagePerBlk}, listCategory=${listCategory})}">&lt;</a>
+		 </li>
+        <li class="active" th:each="page:${#numbers.sequence(pp.startPage, pp.endPage)}">
+        	<a class="a" th:text="${page}" th:href="@{/healthclass/{listCategory}/{page}(page=${page}, listCategory=${listCategory})}"></a>
+       
+        </li>
+
+        <li class="active" th:if="${pp.endPage < pp.totalPage}">
+            <a class="a" th:href="@{/healthclass/{listCategory}/{endplusOne}(endplusOne=${pp.endPage + 1}, listCategory=${listCategory})}">&gt;</a>
+		</li>
+		<li class="active">
+            <a class="a" th:href="@{/healthclass/{listCategory}/{total}(total=${pp.totalPage}, listCategory=${listCategory})}">&gt;&gt;</a>
+		</li>
+    </ul>
+</nav>
+    </div>
+<div>
+	<form action="/healthclass/search" method="get">
+	<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+	<select class="box" name="searchCategory" id="searchCategory">
+  		<option value="강의명">강의명</option>
+  		<option value="강사명">강사명</option>
+  		<option value="요일">요일</option>
+	</select>
+	<input type="text" name="searchKeyword" id="searchKeyword" placeholder="입력" minlength="2"/>
+	<select class="box" name="searchDay" id="searchDay">
+		<option value="Monday">월요일</option>
+  		<option value="Tuesday">화요일</option>
+  		<option value="Wednsday">수요일</option>
+  		<option value="Thursday">목요일</option>	
+  		<option value="Friday">금요일</option>
+  		<option value="Saturday">토요일</option>
+  		<option value="Sunday">일요일</option>	
+	</select>
+	<input type="hidden" name="pageNum" value="1" /> 
+	<input type="hidden" name="listCategory" th:value="${listCategory}"/>
+	<input type="submit" value="검색">
+	</form>
+</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+
+</html>

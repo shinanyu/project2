@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PWFind</title>
+<link rel="stylesheet" href="../css/header.css">
+<link rel="stylesheet" href="../css/loginForm.css"></link>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+function check(){
+
+	var IDpattern = new RegExp(/^[A-Za-z0-9_]+[@]+[a-z.]+$/);
+	
+	if($("#memId").val() == ""){
+		alert("Email를 입력하세요.");
+		$("#memId").focus();
+		return false;
+	}
+	else if(!IDpattern.test($("#memId").val())){
+		alert("이메일 형식으로 입력하세요.");
+		return false;
+	}
+	// 이름
+	if($("#memName").val() == ""){
+		alert("이름을 입력 하세요");
+		$("#memName").focus();
+		return false;
+	}
+}
+</script>
+</head>
+<body>
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+<div class="wrapper">
+	<div class="login-page">
+		<div class="login-content login-content-signin">
+			<h2>비밀번호 찾기</h2>
+			<form action="find_pw.do" method="post" onSubmit="return check()" class="wrapper-box" role="form">
+				ID:<input type="text" id="memId" name="memId"
+				  class="form-control form-control-email"
+				  placeholder="ID를 입력하세요."
+				  required><br>
+				Name:<input type="text" id="memName" name="memName"
+				  class="form-control form-control-password"
+				  placeholder="본인 이름을 입력하세요."
+				  required >
+			<button type="submit" class="btn btn-submit btn-default pull-right">비밀번호 찾기</button>
+			</form>
+		</div>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

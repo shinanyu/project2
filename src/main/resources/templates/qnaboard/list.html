@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Q&A 목록</title>
+    <link rel="stylesheet" href="/css/header.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/qnaboard/list.css">
+</head>
+<body>
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+<div class="wrapper">
+	<div class="board-table" align="center">
+    	<h1>Q&A</h1>
+    	<table class="board-table">
+    		<tr>
+	    		<th style="width : 60%; text-align:center;">제목</th>
+	    		<th style="width : 10%; text-align:center;">작성자</th>
+	    		<th style="width : 10%; text-align:center;">작성일</th>
+	    	</tr>
+   			<tr th:if="${not #lists.isEmpty(qnaList)}" th:each="qna : ${qnaList}">
+        		<td th:if="${qna.isprivate.equals('on')}"><a sec:authorize="hasRole('ROLE_ADMIN')"
+        			th:href="@{/qnaboard/detail/{qnaNo}(qnaNo=${qna.qnaNo})}" th:text="${qna.qnaTitle}"></a>
+				<a th:unless="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}" style="color: gray;">비밀글입니다</a></td>	
+    			<td th:unless="${qna.isprivate.equals('on')}"> 
+    				<a th:href="@{/qnaboard/detail/{qnaNo}(qnaNo=${qna.qnaNo})}" th:text="${qna.qnaTitle}"></a></td>
+            	<td th:text="${qna.qnaNickname}"></td>
+            	<td th:text="${#dates.format(qna.qnaDate, 'yyyy-MM-dd HH:mm')}"></td>
+        	</tr>
+        	<tr th:if="${message}"><td colspan="3" th:text="${message}"></td></tr>
+    	</table>
+    	<div class="w3-bar w3-border w3-round" style="margin: 10px auto; justify-content: center;">
+			<a th:href="@{/qnaboard(page=0)}" class="w3-bar-item w3-button">&laquo;</a>
+			<span th:each="page : ${#numbers.sequence(0,totalPage-1)}">
+			<a th:href="@{/qnaboard(page=${pageStat.index})}" th:text="${pageStat.index + 1}" class="w3-bar-item w3-button"></a>
+			</span>
+			<a th:href="@{/qnaboard(page=${totalPage-1})}" class="w3-bar-item w3-button">&raquo;</a>
+		</div>
+	</div>
+    <div>
+		<input type="button" value="Q&A작성" sec:authorize="isAuthenticated()" onclick="location.href='/qnaboard/writeform'" />
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

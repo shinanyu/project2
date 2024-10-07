@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MyPage</title>
+<link rel="stylesheet" href="../css/header.css">
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script th:inline="javascript">
+var memId = /*[[${memId}]]*/ null;
+</script>
+<script>
+//contextPath 길어서 변수 할당 
+var contextPath = "${pageContext.request.contextPath}";
+
+$(document).ready(function(){
+	getMyClass(memId);
+});
+
+// 내가 개설한 수업 목록
+function getMyClass(memId){
+	$.ajax({
+		type: "GET",
+		url: "getMyClass/"+memId,
+		success: function(result){
+			var content = "<table width=600 style='text-align: center;'>";
+				content+= "<tr><th>강의이름</th><th width=80>요일</th><th width=80>시작시간</th><th width=80>총시간</th></tr>";
+			$.each(result.list, function(index,item){
+				content+= "<tr><td><a href='/healthclass/detail/"+item.clNo+"' style='text-decoration: none;'>"+item.clName+"</a></td>"
+				content+= "<td>"+item.clDay+"</td>"
+				content+= "<td>"+item.clStart+"</td>"
+				content+= "<td>"+item.clTime+"</td></tr>";
+			});
+				content+= "</table>";
+			$("#list").html(content);
+		}
+	});
+}
+
+// 수업개설
+function openClass(){
+	location.href="/healthclass/writeform";
+}
+</script>
+</head>
+<body>
+<div class="wrapper">
+	<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<div align="center" style="margin-top: 5px;">
+		<a th:href="@{/mypageL}"><input type="button" value="내정보"></a>
+		<a th:href="@{/classListP}"><input type="button" value="수강목록"></a>
+		<a th:href="@{/wishListP}"><input type="button" value="관심목록"></a>
+		<a th:href="@{/writeListP}"><input type="button" value="내가쓴글"></a>
+		<a sec:authorize="hasRole('ROLE_BUSINESS')" th:href="@{/myClassP}">
+		<input type="button" value="강의목록"></a>
+	</div>
+	<hr>
+	<h2 align="center">강의목록</h2>
+	<div id="list" align="center">
+	</div>
+	<div style="text-align: center;">
+	<input type="button" value="강의 작성" onClick="openClass()"/>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

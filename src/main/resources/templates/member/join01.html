@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Join</title>
+<link rel="stylesheet" href="../css/header.css">
+</head>
+<body>
+<div class="wrapper">
+<th:block layout:fragment="header" th:insert="~{@{/header}}"></th:block>
+	<div>
+		<h2 align="center">회원 종류를 선택하세요</h2>
+		<div style="float: left; width: 50%" align="center">
+			<table>
+				<tr>
+					<td align="center"><a href="n_joinForm" style='text-decoration: none;'>일반 회원 등록</a></td>
+				</tr>
+				<tr>
+					<td><a href="n_joinForm"><img src="image/normal.png" alt="일반 회원" style="weight: 300px; height: 300px;"></a></td>
+				</tr>
+			</table>
+		</div>
+		<div style="float: left; width: 50%" align="center">
+			<table>
+				<tr>
+					<td align="center"><a href="b_joinForm" style='text-decoration: none;'>강사 회원 등록</a></td>
+				</tr>
+				<tr>
+					<td style="height: 50px"></td>
+				</tr>
+				<tr>
+					<td><a href="b_joinForm"><img src="image/business.png" alt="비즈니스 회원" style="weight: 300px; height: 200px;"></a></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>

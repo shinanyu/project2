@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>공지사항 추가</title>
+<link rel="stylesheet" href="/css/header.css">
+<script>
+function back(){
+    history.back();
+}
+</script>
+</head>
+<body>
+<div class="wrapper">
+<th:block layout:fragment="header" th:replace="~{/header}"></th:block>
+    <div class="container" align="center">
+		<h2 class="text-primary">공지사항 작성</h2>
+		<form action="/noticelist/admin/save" method="post"
+			onsubmit="return check()">
+			<input type="hidden" name="_csrf" th:value="${_csrf?.token}">
+			<table class="table table-striped">
+				<tr>
+					<td>제목</td>
+					<td><input type="text" name="nbTitle" placeholder="제목 입력" required style="width: 900px; height: 25px;">
+					</td>
+				</tr>
+				<tr>
+					<td>내용</td>
+					<td><textarea name="nbContent" placeholder="내용을 입력하세요" required style="width: 900px; height: 450px;"></textarea>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+					<input type="submit" value="작성">
+					<input type="button" value="취소" onclick="back()">
+					</td>
+				</tr>
+			</table>
+    	</form>
+    </div>
+</div>
+<th:block layout:fragment="footer" th:insert="~{@{/footer}}"></th:block>
+</body>
+</html>
